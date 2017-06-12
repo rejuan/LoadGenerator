@@ -27,6 +27,9 @@ public class ClientGenerator implements Runnable {
     @Override
     public void run() {
 
+        System.out.println("URL: " + url);
+        System.out.println("Number of client: " + numberOfClient);
+
         while (true) {
             while (tracker.get() < numberOfClient) {
                 request();
@@ -47,6 +50,7 @@ public class ClientGenerator implements Runnable {
 
             @Override
             public Response onCompleted(Response response) throws Exception {
+                tracker.decrementAndGet();
                 return response;
             }
 
