@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ClientGenerator implements Runnable {
 
+    private Thread clientGenerator;
     private AsyncHttpClient asyncHttpClient;
     private AtomicInteger tracker;
     private int numberOfClient;
@@ -27,6 +28,7 @@ public class ClientGenerator implements Runnable {
     @Override
     public void run() {
 
+        clientGenerator = Thread.currentThread();
         System.out.println("URL: " + url);
         System.out.println("Number of client: " + numberOfClient);
 
@@ -39,7 +41,6 @@ public class ClientGenerator implements Runnable {
             try {
                 Thread.sleep(100);
             } catch (Exception ex) {
-
             }
         }
     }
@@ -51,12 +52,14 @@ public class ClientGenerator implements Runnable {
             @Override
             public Response onCompleted(Response response) throws Exception {
                 tracker.decrementAndGet();
+                clientGenerator.interrupt();
                 return response;
             }
 
             @Override
             public void onThrowable(Throwable t) {
                 tracker.decrementAndGet();
+                clientGenerator.interrupt();
             }
         });
     }
