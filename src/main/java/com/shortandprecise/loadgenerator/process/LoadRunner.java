@@ -1,6 +1,6 @@
 package com.shortandprecise.loadgenerator.process;
 
-import com.shortandprecise.loadgenerator.constant.Constant;
+import com.shortandprecise.loadgenerator.config.PropertyConfig;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 
@@ -14,12 +14,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LoadRunner implements Runnable {
 
     private final AsyncHttpClient asyncHttpClient;
+    private final PropertyConfig propertyConfig;
     private final AtomicInteger requestTracker;
     private final Statistics statistics;
 
     public LoadRunner() {
         this.asyncHttpClient = new DefaultAsyncHttpClient();
         this.requestTracker = new AtomicInteger(0);
+        this.propertyConfig = PropertyConfig.getInstance();
         this.statistics = new Statistics();
     }
 
@@ -28,7 +30,7 @@ public class LoadRunner implements Runnable {
         Client client = new Client(asyncHttpClient, Thread.currentThread(), requestTracker);
 
         while (true) {
-            while (requestTracker.get() < Constant.NUMBER_OF_CLIENT) {
+            while (requestTracker.get() < propertyConfig.getNumberOfClient()) {
                 requestTracker.incrementAndGet();
                 //TODO need to create request from here
                 qpsCircuit();
@@ -41,7 +43,7 @@ public class LoadRunner implements Runnable {
 
     private void qpsCircuit() {
         long totalRequest = statistics.getSuccessfulRequest() + statistics.getFailureRequest();
-        if((totalRequest / Constant.QPS_COUNT_PERIOD) > Constant.MAX_QPS_SHIELD) {
+        if((totalRequest / propertyConfig.getQpsCountPeriod()) > propertyConfig.getMaxQpsShield()) {
             //TODO need to add proper comment
             sleep(100);
         }
