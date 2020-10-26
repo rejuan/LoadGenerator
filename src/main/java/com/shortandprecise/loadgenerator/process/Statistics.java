@@ -54,8 +54,26 @@ public class Statistics {
 	 *
 	 * @return long
 	 */
-	public long getTotalResponseTime() {
-		return totalResponseTime.get();
+	public long resetAndGetTotalResponseTime() {
+		return totalResponseTime.getAndSet(0);
+	}
+
+	/**
+	 * Provide total successful request number
+	 *
+	 * @return long
+	 */
+	public long resetAndGetSuccessfulRequest() {
+		return successfulRequest.getAndSet(0);
+	}
+
+	/**
+	 * Provide total failure request number
+	 *
+	 * @return long
+	 */
+	public long resetAndGetFailureRequest() {
+		return failureRequest.getAndSet(0);
 	}
 
 	/**
@@ -81,7 +99,7 @@ public class Statistics {
 	 *
 	 * @return long
 	 */
-	public long getMaxResponseTime() {
-		return maxResponseTime.get();
+	public long resetAndGetMaxResponseTime() {
+		return maxResponseTime.getAndSet(0);
 	}
 }

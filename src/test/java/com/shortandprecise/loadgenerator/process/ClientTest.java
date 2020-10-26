@@ -18,17 +18,19 @@ import static org.junit.jupiter.api.Assertions.*;
 class ClientTest {
 
 	private final AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient();
-	private final Thread clientGenerator = new Thread();
-	private final AtomicInteger tracker = new AtomicInteger(1);
+	private AtomicInteger requestTracker;
+	private Thread clientGenerator;
 	private final int port = ThreadLocalRandom.current().nextInt(10000, 60000);
 	private Client client;
 	private Server server;
 
 	@BeforeEach
 	void setUp() throws Exception {
+		this.clientGenerator = new Thread();
+		this.requestTracker = new AtomicInteger(1);
 		this.server = new Server(port);
 		this.server.start();
-		this.client = new Client(asyncHttpClient, clientGenerator, tracker);
+		this.client = new Client(asyncHttpClient, new Statistics());
 	}
 
 	@AfterEach
@@ -41,33 +43,33 @@ class ClientTest {
 	@Test
 	void testGetRequestSuccess() throws ExecutionException, InterruptedException {
 		String url = "http://localhost:" + port;
-		ListenableFuture<Response> request = client.getRequest(url, null);
+		ListenableFuture<Response> request = client.getRequest(url, null, clientGenerator, requestTracker);
 		request.get();
 
-		assertEquals(0, tracker.get());
+		assertEquals(0, requestTracker.get());
 	}
 
 	@Test
 	void testGetRequestFailure() {
 		try {
 			String url = "http://localhost:80/";
-			ListenableFuture<Response> request = client.getRequest(url, null);
+			ListenableFuture<Response> request = client.getRequest(url, null, clientGenerator, requestTracker);
 			request.get();
 		} catch (Exception ex) {
 			// Expected exception to verify failure case
 		}
 
-		assertEquals(0, tracker.get());
+		assertEquals(0, requestTracker.get());
 	}
 
 	@Test
 	void testPostRequestSuccess() throws ExecutionException, InterruptedException {
 		String url = "http://localhost:" + port;
 		String body = "[1,2]";
-		ListenableFuture<Response> request = client.postRequest(url, body, null);
+		ListenableFuture<Response> request = client.postRequest(url, body, null, clientGenerator, requestTracker);
 		request.get();
 
-		assertEquals(0, tracker.get());
+		assertEquals(0, requestTracker.get());
 	}
 
 	@Test
@@ -75,12 +77,12 @@ class ClientTest {
 		try {
 			String url = "http://localhost:80/";
 			String body = "[1,2]";
-			ListenableFuture<Response> request = client.postRequest(url, body, null);
+			ListenableFuture<Response> request = client.postRequest(url, body, null, clientGenerator, requestTracker);
 			request.get();
 		} catch (Exception ex) {
 			// Expected exception to verify failure case
 		}
 
-		assertEquals(0, tracker.get());
+		assertEquals(0, requestTracker.get());
 	}
 }

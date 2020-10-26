@@ -1,8 +1,7 @@
 package com.shortandprecise.loadgenerator.process;
 
 import com.shortandprecise.loadgenerator.config.PropertyConfig;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.DefaultAsyncHttpClient;
+import com.shortandprecise.loadgenerator.config.SchemaConfig;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -13,26 +12,27 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class LoadRunner implements Runnable {
 
-    private final AsyncHttpClient asyncHttpClient;
     private final PropertyConfig propertyConfig;
+    private final SchemaConfig schemaConfig;
     private final AtomicInteger requestTracker;
     private final Statistics statistics;
 
-    public LoadRunner() {
-        this.asyncHttpClient = new DefaultAsyncHttpClient();
+    public LoadRunner(PropertyConfig propertyConfig, SchemaConfig schemaConfig, Statistics statistics) {
         this.requestTracker = new AtomicInteger(0);
-        this.propertyConfig = PropertyConfig.getInstance();
-        this.statistics = new Statistics();
+        this.propertyConfig = propertyConfig;
+        this.schemaConfig = schemaConfig;
+        this.statistics = statistics;
     }
 
     @Override
     public void run() {
-        Client client = new Client(asyncHttpClient, Thread.currentThread(), requestTracker);
+        Thread loadRunner = Thread.currentThread();
+        RequestFacade requestFacade = new RequestFacade(schemaConfig, statistics);
 
         while (true) {
             while (requestTracker.get() < propertyConfig.getNumberOfClient()) {
                 requestTracker.incrementAndGet();
-                //TODO need to create request from here
+                requestFacade.request(loadRunner, requestTracker);
                 qpsCircuit();
             }
 

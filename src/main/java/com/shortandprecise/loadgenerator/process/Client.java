@@ -16,13 +16,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Client {
 
 	private final AsyncHttpClient asyncHttpClient;
-	private final Thread clientGenerator;
-	private final AtomicInteger tracker;
+	private final Statistics statistics;
 
-	public Client(AsyncHttpClient asyncHttpClient, Thread clientGenerator, AtomicInteger tracker) {
+	public Client(AsyncHttpClient asyncHttpClient, Statistics statistics) {
 		this.asyncHttpClient = asyncHttpClient;
-		this.clientGenerator = clientGenerator;
-		this.tracker = tracker;
+		this.statistics = statistics;
 	}
 
 	/**
@@ -32,20 +30,24 @@ public class Client {
 	 * @param httpHeaders {@link HttpHeaders}
 	 * @return ListenableFuture<Response>
 	 */
-	public ListenableFuture<Response> getRequest(String url, HttpHeaders httpHeaders) {
+	public ListenableFuture<Response> getRequest(String url, HttpHeaders httpHeaders, Thread loadRunner,
+	                                             AtomicInteger requestTracker) {
+		long startTime = System.currentTimeMillis();
 		return asyncHttpClient.prepareGet(url).setHeaders(httpHeaders).execute(new AsyncCompletionHandler<>() {
 
 			@Override
 			public Response onCompleted(Response response) {
-				tracker.decrementAndGet();
-				clientGenerator.interrupt();
+				requestTracker.decrementAndGet();
+				statistics.storeSuccessStat((System.currentTimeMillis() - startTime));
+				loadRunner.interrupt();
 				return response;
 			}
 
 			@Override
 			public void onThrowable(Throwable t) {
-				tracker.decrementAndGet();
-				clientGenerator.interrupt();
+				requestTracker.decrementAndGet();
+				statistics.storeFailureStat((System.currentTimeMillis() - startTime));
+				loadRunner.interrupt();
 			}
 		});
 	}
@@ -57,21 +59,25 @@ public class Client {
 	 * @param httpHeaders {@link HttpHeaders}
 	 * @return ListenableFuture<Response>
 	 */
-	public ListenableFuture<Response> postRequest(String url, String body, HttpHeaders httpHeaders) {
+	public ListenableFuture<Response> postRequest(String url, String body, HttpHeaders httpHeaders, Thread loadRunner,
+	                                              AtomicInteger requestTracker) {
+		long startTime = System.currentTimeMillis();
 		return asyncHttpClient.preparePost(url).setHeaders(httpHeaders).setBody(body)
 				.execute(new AsyncCompletionHandler<>() {
 
 					@Override
 					public Response onCompleted(Response response) {
-						tracker.decrementAndGet();
-						clientGenerator.interrupt();
+						requestTracker.decrementAndGet();
+						statistics.storeSuccessStat((System.currentTimeMillis() - startTime));
+						loadRunner.interrupt();
 						return response;
 					}
 
 					@Override
 					public void onThrowable(Throwable t) {
-						tracker.decrementAndGet();
-						clientGenerator.interrupt();
+						requestTracker.decrementAndGet();
+						statistics.storeFailureStat((System.currentTimeMillis() - startTime));
+						loadRunner.interrupt();
 					}
 				});
 	}

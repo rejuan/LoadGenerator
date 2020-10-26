@@ -16,9 +16,11 @@ dependencies {
     implementation 'org.asynchttpclient:async-http-client:2.12.1'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     implementation 'net.logstash.logback:logstash-logback-encoder:6.4'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.3'
 
-    testCompile 'org.eclipse.jetty:jetty-server:9.4.33.v20201020'
+    testImplementation 'org.mockito:mockito-core:3.5.15'
     testCompile 'org.junit.jupiter:junit-jupiter:5.7.0'
+    testCompile 'org.eclipse.jetty:jetty-server:9.4.33.v20201020'
 }
 
 test {
