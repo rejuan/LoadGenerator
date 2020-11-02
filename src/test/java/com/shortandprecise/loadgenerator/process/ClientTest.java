@@ -52,7 +52,7 @@ class ClientTest {
 	@Test
 	void testGetRequestFailure() {
 		try {
-			String url = "http://localhost:80/";
+			String url = "http://localhost:80000/";
 			ListenableFuture<Response> request = client.getRequest(url, null, clientGenerator, requestTracker);
 			request.get();
 		} catch (Exception ex) {
