@@ -75,7 +75,7 @@ class ClientTest {
 	@Test
 	void testPostRequestFailure() {
 		try {
-			String url = "http://localhost:80/";
+			String url = "http://localhost:80000/";
 			String body = "[1,2]";
 			ListenableFuture<Response> request = client.postRequest(url, body, null, clientGenerator, requestTracker);
 			request.get();
