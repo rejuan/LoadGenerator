@@ -1,5 +1,6 @@
 plugins {
-    id 'java'
+    id "java"
+    id "org.sonarqube" version "3.0"
 }
 
 group 'com.shortandprecise'
@@ -25,6 +26,14 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "rejuan_LoadGenerator"
+        property "sonar.organization", "rejuan"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
 }
 
 jar {
