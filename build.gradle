@@ -29,6 +29,14 @@ test {
     useJUnitPlatform()
 }
 
+jacocoTestReport {
+    reports {
+        html.enabled true
+        xml.enabled false
+        csv.enabled false
+    }
+}
+
 sonarqube {
     properties {
         property "sonar.projectKey", "rejuan_LoadGenerator"

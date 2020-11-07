@@ -54,7 +54,7 @@ public class LoadRunner implements Runnable {
     private void sleep(long timeInMillis) {
         try {
             Thread.sleep(timeInMillis);
-        } catch (InterruptedException ignored) {
+        } catch (Exception ignored) {
             // No need to log this exception because when a request completed
             // then this sleeping will be interrupted to assure another call
         }
