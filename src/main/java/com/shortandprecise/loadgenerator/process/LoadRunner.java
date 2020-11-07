@@ -16,12 +16,14 @@ public class LoadRunner implements Runnable {
     private final SchemaConfig schemaConfig;
     private final AtomicInteger requestTracker;
     private final Statistics statistics;
+    private volatile boolean isRunning;
 
     public LoadRunner(PropertyConfig propertyConfig, SchemaConfig schemaConfig, Statistics statistics) {
         this.requestTracker = new AtomicInteger(0);
         this.propertyConfig = propertyConfig;
         this.schemaConfig = schemaConfig;
         this.statistics = statistics;
+        this.isRunning = true;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class LoadRunner implements Runnable {
         Thread loadRunner = Thread.currentThread();
         RequestFacade requestFacade = new RequestFacade(schemaConfig, statistics);
 
-        while (true) {
+        while (isRunning) {
             while (requestTracker.get() < propertyConfig.getNumberOfClient()) {
                 requestTracker.incrementAndGet();
                 requestFacade.request(loadRunner, requestTracker);
@@ -52,7 +54,13 @@ public class LoadRunner implements Runnable {
     private void sleep(long timeInMillis) {
         try {
             Thread.sleep(timeInMillis);
-        } catch (Exception ignored) {
+        } catch (InterruptedException ignored) {
+            // No need to log this exception because when a request completed
+            // then this sleeping will be interrupted to assure another call
         }
+    }
+
+    public void shutdown() {
+        isRunning = false;
     }
 }

@@ -35,13 +35,14 @@ public class SchemaConfig {
 	}
 
 	private void loadSchema() {
-		Map schemaMap;
+		Map<String, Object> schemaMap;
 		try {
 			File file = new File(propertyConfig.getSchemaPath());
 			schemaMap = new ObjectMapper().readValue(file, Map.class);
 			schema = prepareSchema(schemaMap);
 		} catch (Exception ex) {
 			LOGGER.error("Schema loading problem", ex);
+			System.exit(0);
 		}
 	}
 
@@ -51,12 +52,12 @@ public class SchemaConfig {
 	 * @param schemaMap Schema map
 	 * @return Schema
 	 */
-	private Schema prepareSchema(Map schemaMap) {
+	private Schema prepareSchema(Map<String, Object> schemaMap) {
 		List<Request> requestList = new ArrayList<>();
 		String baseUrl = (String) schemaMap.get(BASE_URL);
 		List<Map<String, Object>> requests = (List<Map<String, Object>>) schemaMap.get(REQUESTS);
 		requests.forEach(requestMap -> {
-			String url = baseUrl + (String) requestMap.get(URL);
+			String url = baseUrl + requestMap.get(URL);
 			String method = (String) requestMap.get(METHOD);
 			String body = (String) requestMap.get(BODY);
 			HttpHeaders httpHeaders = getHttpHeaders(requestMap);

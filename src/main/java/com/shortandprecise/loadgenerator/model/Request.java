@@ -2,8 +2,6 @@ package com.shortandprecise.loadgenerator.model;
 
 import io.netty.handler.codec.http.HttpHeaders;
 
-import java.util.Map;
-
 /**
  * Request model
  */

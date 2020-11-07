@@ -1,6 +1,7 @@
 plugins {
-    id "java"
-    id "org.sonarqube" version "3.0"
+    id 'java'
+    id 'jacoco'
+    id 'org.sonarqube' version '3.0'
 }
 
 group 'com.shortandprecise'
