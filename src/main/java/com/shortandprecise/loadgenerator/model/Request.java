@@ -8,13 +8,13 @@ import io.netty.handler.codec.http.HttpHeaders;
 public class Request {
 
 	private String url;
-	private String method;
+	private HttpMethod httpMethod;
 	private HttpHeaders headers;
 	private String body;
 
-	public Request(String url, String method, HttpHeaders headers, String body) {
+	public Request(String url, HttpMethod httpMethod, HttpHeaders headers, String body) {
 		this.url = url;
-		this.method = method;
+		this.httpMethod = httpMethod;
 		this.headers = headers;
 		this.body = body;
 	}
@@ -27,12 +27,12 @@ public class Request {
 		this.url = url;
 	}
 
-	public String getMethod() {
-		return method;
+	public HttpMethod getHttpMethod() {
+		return httpMethod;
 	}
 
-	public void setMethod(String method) {
-		this.method = method;
+	public void setHttpMethod(HttpMethod httpMethod) {
+		this.httpMethod = httpMethod;
 	}
 
 	public HttpHeaders getHeaders() {

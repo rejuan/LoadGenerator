@@ -1,5 +1,6 @@
 package com.shortandprecise.loadgenerator.process;
 
+import com.shortandprecise.loadgenerator.model.HttpMethod;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.ListenableFuture;
@@ -41,43 +42,21 @@ class ClientTest {
 	}
 
 	@Test
-	void testGetRequestSuccess() throws ExecutionException, InterruptedException {
-		String url = "http://localhost:" + port;
-		ListenableFuture<Response> request = client.getRequest(url, null, clientGenerator, requestTracker);
-		request.get();
-
-		assertEquals(0, requestTracker.get());
-	}
-
-	@Test
-	void testGetRequestFailure() {
-		try {
-			String url = "http://localhost:80000/";
-			ListenableFuture<Response> request = client.getRequest(url, null, clientGenerator, requestTracker);
-			request.get();
-		} catch (Exception ex) {
-			// Expected exception to verify failure case
-		}
-
-		assertEquals(0, requestTracker.get());
-	}
-
-	@Test
-	void testPostRequestSuccess() throws ExecutionException, InterruptedException {
+	void testRequestSuccess() throws ExecutionException, InterruptedException {
 		String url = "http://localhost:" + port;
 		String body = "[1,2]";
-		ListenableFuture<Response> request = client.postRequest(url, body, null, clientGenerator, requestTracker);
+		ListenableFuture<Response> request = client.request(url, HttpMethod.POST, null, body, clientGenerator, requestTracker);
 		request.get();
 
 		assertEquals(0, requestTracker.get());
 	}
 
 	@Test
-	void testPostRequestFailure() {
+	void testRequestFailure() {
 		try {
 			String url = "http://localhost:80000/";
 			String body = "[1,2]";
-			ListenableFuture<Response> request = client.postRequest(url, body, null, clientGenerator, requestTracker);
+			ListenableFuture<Response> request = client.request(url, HttpMethod.POST, null, body, clientGenerator, requestTracker);
 			request.get();
 		} catch (Exception ex) {
 			// Expected exception to verify failure case
@@ -85,4 +64,5 @@ class ClientTest {
 
 		assertEquals(0, requestTracker.get());
 	}
+
 }

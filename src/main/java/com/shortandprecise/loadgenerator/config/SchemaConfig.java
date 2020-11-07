@@ -1,6 +1,7 @@
 package com.shortandprecise.loadgenerator.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shortandprecise.loadgenerator.model.HttpMethod;
 import com.shortandprecise.loadgenerator.model.Request;
 import com.shortandprecise.loadgenerator.model.Schema;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
@@ -12,6 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Load schema from file
@@ -62,7 +64,7 @@ public class SchemaConfig {
 			String body = (String) requestMap.get(BODY);
 			HttpHeaders httpHeaders = getHttpHeaders(requestMap);
 
-			requestList.add(new Request(url, method, httpHeaders, body));
+			requestList.add(new Request(url, getHttpMethod(method), httpHeaders, body));
 		});
 
 		return new Schema(requestList);
@@ -74,6 +76,15 @@ public class SchemaConfig {
 		HttpHeaders httpHeaders = new DefaultHttpHeaders();
 		headers.forEach(httpHeaders::add);
 		return httpHeaders;
+	}
+
+	private HttpMethod getHttpMethod(String method) {
+		HttpMethod httpMethod = HttpMethod.get(method);
+		if(Objects.isNull(httpMethod)) {
+			throw new RuntimeException("Invalid http method in schema");
+		} else {
+			return httpMethod;
+		}
 	}
 
 	public Schema getSchema() {

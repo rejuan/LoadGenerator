@@ -31,15 +31,8 @@ public class RequestFacade {
 
 	public void request(Thread loadRunner, AtomicInteger requestTracker) {
 		Request request = getRequestObject();
-		String url = request.getUrl();
-		String body = request.getBody();
-		HttpHeaders httpHeaders = request.getHeaders();
-
-		if (request.getMethod().equalsIgnoreCase("get")) {
-			client.getRequest(url, httpHeaders, loadRunner, requestTracker);
-		} else {
-			client.postRequest(url, body, httpHeaders, loadRunner, requestTracker);
-		}
+		client.request(request.getUrl(), request.getHttpMethod(), request.getHeaders(), request.getBody(),
+				loadRunner, requestTracker);
 	}
 
 	private Request getRequestObject() {

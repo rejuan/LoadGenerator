@@ -1,10 +1,9 @@
 package com.shortandprecise.loadgenerator.process;
 
+import com.shortandprecise.loadgenerator.model.HttpMethod;
 import io.netty.handler.codec.http.HttpHeaders;
-import org.asynchttpclient.AsyncCompletionHandler;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.ListenableFuture;
-import org.asynchttpclient.Response;
+import org.apache.commons.lang3.StringUtils;
+import org.asynchttpclient.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,13 +26,21 @@ public class Client {
 	 * Make a GET request to provided URL. Send given header as part of request
 	 *
 	 * @param url         Target URL
+	 * @param httpMethod  {@link HttpMethod}
 	 * @param httpHeaders {@link HttpHeaders}
+	 * @param body        Request body
 	 * @return ListenableFuture<Response>
 	 */
-	public ListenableFuture<Response> getRequest(String url, HttpHeaders httpHeaders, Thread loadRunner,
-	                                             AtomicInteger requestTracker) {
+	public ListenableFuture<Response> request(String url, HttpMethod httpMethod, HttpHeaders httpHeaders,
+	                                          String body, Thread loadRunner, AtomicInteger requestTracker) {
 		long startTime = System.currentTimeMillis();
-		return asyncHttpClient.prepareGet(url).setHeaders(httpHeaders).execute(new AsyncCompletionHandler<>() {
+		BoundRequestBuilder requestBuilder = asyncHttpClient.prepare(httpMethod.getMethod(), url)
+				.setHeaders(httpHeaders);
+		if (StringUtils.isNotBlank(body)) {
+			requestBuilder.setBody(body);
+		}
+
+		return requestBuilder.execute(new AsyncCompletionHandler<>() {
 
 			@Override
 			public Response onCompleted(Response response) {
@@ -50,35 +57,5 @@ public class Client {
 				loadRunner.interrupt();
 			}
 		});
-	}
-
-	/**
-	 * Make a POST request to provided URL. Send given header as part of request
-	 *
-	 * @param url         Target URL
-	 * @param httpHeaders {@link HttpHeaders}
-	 * @return ListenableFuture<Response>
-	 */
-	public ListenableFuture<Response> postRequest(String url, String body, HttpHeaders httpHeaders, Thread loadRunner,
-	                                              AtomicInteger requestTracker) {
-		long startTime = System.currentTimeMillis();
-		return asyncHttpClient.preparePost(url).setHeaders(httpHeaders).setBody(body)
-				.execute(new AsyncCompletionHandler<>() {
-
-					@Override
-					public Response onCompleted(Response response) {
-						requestTracker.decrementAndGet();
-						statistics.storeSuccessStat((System.currentTimeMillis() - startTime));
-						loadRunner.interrupt();
-						return response;
-					}
-
-					@Override
-					public void onThrowable(Throwable t) {
-						requestTracker.decrementAndGet();
-						statistics.storeFailureStat((System.currentTimeMillis() - startTime));
-						loadRunner.interrupt();
-					}
-				});
 	}
 }
