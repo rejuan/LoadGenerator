@@ -31,9 +31,10 @@ test {
 
 jacocoTestReport {
     reports {
-        html.enabled false
         xml.enabled true
+        html.enabled false
         csv.enabled false
+        xml.destination file("$buildDir/jacoco/test/jacocoTestReport.xml")
     }
 }
 
@@ -42,6 +43,8 @@ sonarqube {
         property "sonar.projectKey", "rejuan_LoadGenerator"
         property "sonar.organization", "rejuan"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.jacoco.reportPath", "$buildDir/jacoco/test.exec"
+        property "sonar.coverage.jacoco.xmlReportPaths", "$buildDir/jacoco/test/jacocoTestReport.xml"
     }
 }
 
