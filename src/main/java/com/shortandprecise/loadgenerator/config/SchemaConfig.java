@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,21 +33,16 @@ public class SchemaConfig {
 	private static final String HEADERS = "headers";
 	private static final String BODY = "body";
 
-	public SchemaConfig(PropertyConfig propertyConfig) {
+	public SchemaConfig(PropertyConfig propertyConfig) throws IOException {
 		this.propertyConfig = propertyConfig;
 		loadSchema();
 	}
 
-	private void loadSchema() {
+	private void loadSchema() throws IOException {
 		Map<String, Object> schemaMap;
-		try {
-			File file = new File(propertyConfig.getSchemaPath());
-			schemaMap = new ObjectMapper().readValue(file, Map.class);
-			schema = prepareSchema(schemaMap);
-		} catch (Exception ex) {
-			LOGGER.error("Schema loading problem", ex);
-			System.exit(0);
-		}
+		File file = new File(propertyConfig.getSchemaPath());
+		schemaMap = new ObjectMapper().readValue(file, Map.class);
+		schema = prepareSchema(schemaMap);
 	}
 
 	/**

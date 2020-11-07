@@ -1,5 +1,7 @@
 package com.shortandprecise.loadgenerator.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +32,9 @@ public enum HttpMethod {
 	}
 
 	public static HttpMethod get(String method) {
-		return httpMethodMap.get(method);
+		if(StringUtils.isBlank(method)) {
+			return null;
+		}
+		return httpMethodMap.get(method.toLowerCase());
 	}
 }
