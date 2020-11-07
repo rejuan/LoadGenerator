@@ -1,6 +1,7 @@
 package com.shortandprecise.loadgenerator.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shortandprecise.loadgenerator.exception.SchemaValidationException;
 import com.shortandprecise.loadgenerator.model.HttpMethod;
 import com.shortandprecise.loadgenerator.model.Request;
 import com.shortandprecise.loadgenerator.model.Schema;
@@ -81,7 +82,7 @@ public class SchemaConfig {
 	private HttpMethod getHttpMethod(String method) {
 		HttpMethod httpMethod = HttpMethod.get(method);
 		if(Objects.isNull(httpMethod)) {
-			throw new RuntimeException("Invalid http method in schema");
+			throw new SchemaValidationException("Invalid http method in schema");
 		} else {
 			return httpMethod;
 		}

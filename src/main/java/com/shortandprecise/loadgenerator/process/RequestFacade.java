@@ -3,7 +3,6 @@ package com.shortandprecise.loadgenerator.process;
 import com.shortandprecise.loadgenerator.config.SchemaConfig;
 import com.shortandprecise.loadgenerator.model.Request;
 import com.shortandprecise.loadgenerator.model.Schema;
-import io.netty.handler.codec.http.HttpHeaders;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 
