@@ -1,0 +1,13 @@
+{
+  "baseUrl": "http://localhost:8081/",
+  "requests": [
+    {
+      "url": "mockGet",
+      "method": "WRONG",
+      "headers": {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache"
+      }
+    }
+  ]
+}

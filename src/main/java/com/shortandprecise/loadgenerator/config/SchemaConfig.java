@@ -7,8 +7,6 @@ import com.shortandprecise.loadgenerator.model.Request;
 import com.shortandprecise.loadgenerator.model.Schema;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpHeaders;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +19,6 @@ import java.util.Objects;
  * Load schema from file
  */
 public class SchemaConfig {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(SchemaConfig.class);
 
 	private Schema schema;
 	private final PropertyConfig propertyConfig;
